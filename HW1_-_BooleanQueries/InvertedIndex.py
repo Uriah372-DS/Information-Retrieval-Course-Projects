@@ -4,7 +4,11 @@ import re
 class InvertedIndex:
 
     def __init__(self, path: str):
-        self.AP_wordmap = {}
+        self.wordmap = {}
+        # format example:
+        # {'the': [(1, 'AP880219-0002'), (2, 'AP880314-0254')],
+        # 'sanctions': [(2, 'AP880314-0254'), ( 4, 'AP880221-0077')],
+        # 'african': [(3, 'AP880222-0029'), ]}
         self.path = str(path)
         self.doc_counter = 0
 
