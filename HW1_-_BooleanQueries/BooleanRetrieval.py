@@ -26,8 +26,8 @@ class BooleanRetrieval:
 
             # word is a term
             if word not in ['AND', 'OR', 'NOT']:
-                if word in self.inverted_index.wordmap:
-                    stack.append([s for s in self.inverted_index.wordmap[word]])  # add the LIST of the word instead of the word itself
+                if word in self.inverted_index.posting_lists:
+                    stack.append([s for s in self.inverted_index.posting_lists[word]])  # add the LIST of the word instead of the word itself
                 else:
                     stack.append([])
 
