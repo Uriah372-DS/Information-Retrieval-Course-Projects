@@ -52,9 +52,7 @@ class BooleanRetrieval:
     def and_update(self, left: list, right: list):
         temp = []
         li = ri = 0
-        m = len(left)
-        n = len(right)
-        while li < m and ri < n:
+        while li < len(left) and ri < len(right):
             if left[li] == right[ri] and right[ri] not in temp:
                 temp.append(right[ri])
             elif left[li] < right[ri]:
@@ -66,34 +64,31 @@ class BooleanRetrieval:
     def or_update(self, left, right):
         # finds value in left that are not in right, and inserts them in place
         ri = 0
-        n = len(right)
         for val in left:
-            while ri < n and right[ri] < val:
+            while ri < len(right) and right[ri] < val:
                 ri += 1
-            if ri < n and right[ri] != val:
+            if ri < len(right) and right[ri] != val:
                 right.insert(ri, val)
                 ri += 1
-            if ri >= n:
+            if ri >= len(right):
                 right.append(val)
         return right
 
     def not_update(self, left, right):
         index_l = 0
-        m = len(left)
         for val in right:
-            while index_l < m and left[index_l] < val:
+            while index_l < len(left) and left[index_l] < val:
                 index_l += 1
-            if index_l < m and val == left[index_l]:
+            if index_l < len(left) and val == left[index_l]:
                 left.pop(index_l)
         return left
 
 
 if __name__ == '__main__':
     path = "data/HW1/AP_Coll_Parsed"
-    index = InvertedIndex(path)
-    index.tokenize()
+    index = InvertedIndex(path).make_posting_lists()
     boolean_retrieval = BooleanRetrieval(index)
-    queries_path = 'data\HW1\BooleanQueries.txt'
+    queries_path = 'data/HW1/BooleanQueries.txt'
     results = []
     with open(queries_path, 'r') as queries:
         for query in queries.readlines():
@@ -101,6 +96,6 @@ if __name__ == '__main__':
             results.append(' '.join(boolean_retrieval.last_results))
 
     for i in range(5):
-        with open("Part_2.txt", 'a') as output:
-            print(results[i])
+        with open("Part_2.txt", 'w') as output:
+            print(str(i + 1) + ':' + results[i])
             output.write(results[i] + '\n')

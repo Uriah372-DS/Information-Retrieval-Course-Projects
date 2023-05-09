@@ -22,11 +22,10 @@ class InvertedIndex:
         self.ids_to_docs = {}  # one-to-one mapping from doc numbers to ids.
         self.path = str(collection_path)
         self.doc_counter = 0
-        self.tokenize()
 
-    def tokenize(self):
+    def make_posting_lists(self):
         """
-        Build the map from words to document ids, and give the documents their internal ids.
+        Build the posting lists from words to document ids, and give the documents their internal ids.
         :return:
         """
         # iterate through all files
@@ -56,54 +55,42 @@ class InvertedIndex:
             if not self.is_id_in_posting_list(internal_id, self.posting_lists[word]):
                 self.posting_lists[word].append(internal_id)
 
-    def is_id_in_posting_list(self, id_number: int, posting_list: list[int]):
-        for i in range(start=len(posting_list) - 1, stop=-1, step=-1):
+    def is_id_in_posting_list(self, id_number: int, posting_list: list):
+        for i in range(len(posting_list) - 1, -1, -1):
             if posting_list[i] < id_number:
                 return False
 
         return id_number in posting_list
 
-    def get_posting_list(self, term):
-        """
-        Return the posting list for the given term from the index.
-        If the term is not in the index, return an empty list.
-        :param term: a word
-        :return: list of document ids in which the term appears
-        """
-        return [] if term not in self.posting_lists.keys() else self.posting_lists[term]
-
 
 if __name__ == '__main__':
     path = "data/HW1/AP_Coll_Parsed"
-    index = InvertedIndex(path)
+    import time
+    start_time = time.time()
+    index = InvertedIndex(path).make_posting_lists()
+    print("Elapsed Time:", time.time() - start_time)
     # for k, v in index.posting_lists.items():
     #     print(k + ': ' + str(v))
 
     # part 3:
+    sorted_terms = sorted(index.posting_lists.keys())  # secondary sorting by ascending alphabetical order
+    sorted_terms = sorted(sorted_terms,
+                          key=lambda x: len(index.posting_lists[x]),
+                          reverse=True)  # primary sorting by descending doc. frequency order
     print("The top 10 terms with the highest document frequency:")
-    for i, term in enumerate(sorted(index.posting_lists.keys(),
-                                    key=lambda x: len(index.posting_lists[x]),
-                                    reverse=True)[:10]):
-        print(str(i + 1) + ": " + term)
-    print()
+    for i, term in enumerate(sorted_terms[:10]):
+        print(term + ": " + str(len(index.posting_lists[term])))
 
     print("The top 10 terms with the lowest document frequency:")
-    for i, term in enumerate(sorted(index.posting_lists.keys(),
-                                    key=lambda x: len(index.posting_lists[x]),
-                                    reverse=False)[:10]):
-        print(str(i + 1) + ": " + term)
-    print()
+    for i, term in enumerate(sorted_terms[-10:]):
+        print(term + ": " + str(len(index.posting_lists[term])))
 
-    print("The different characteristics of the above two sets of terms:")
-    print("The terms with the highest df are the terms that appear in the highest amount of documents in the corpus.")
-    print("The terms with the highest df are the terms that appear in the lowest amount of documents in the corpus.")
-
-#The top 10 terms with the highest document frequency:
+# The top 10 terms with the highest document frequency:
 # 1: the
 # 2: of
-# 3: in
-# 4: a
-# 5: and
+# 3: and
+# 4: in
+# 5: a
 # 6: to
 # 7: for
 # 8: said
@@ -111,13 +98,13 @@ if __name__ == '__main__':
 # 10: that
 #
 # The top 10 terms with the lowest document frequency:
-# 1: australiavietnam
-# 2: radelats
-# 3: detered
-# 4: nspca
-# 5: metveit
-# 6: wettre
-# 7: toralf
-# 8: 283031
-# 9: weekwas
-# 10: mothibe
+# 1: 000021
+# 2: 000012
+# 3: 000010
+# 4: 00001
+# 5: 000008
+# 6: 0000066
+# 7: 0000057
+# 8: 0000033
+# 9: 0000015
+# 10: 00000
